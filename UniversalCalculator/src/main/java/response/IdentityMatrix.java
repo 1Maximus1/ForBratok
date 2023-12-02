@@ -1,0 +1,43 @@
+package response;
+
+import UniversalCalculator.UniversalCalculator.MatrixActions;
+
+public class IdentityMatrix extends SquareMatrix
+{
+	public IdentityMatrix(int size) {
+		super(size);
+		initializeIdentityMatrix();
+	}
+
+	public IdentityMatrix(Matrix matrix) {
+		super(matrix);
+		initializeIdentityMatrix();
+	}
+
+	public IdentityMatrix(double[][] matrix){
+		super(matrix);
+		initializeIdentityMatrix();
+	}
+
+	private void initializeIdentityMatrix() {
+		for (int i = 0; i < getRows(); i++) {
+			for (int j = 0; j < getColumns(); j++) {
+				if (i == j) {
+					setElement(i, j, 1.0);
+				} else {
+					setElement(i, j, 0.0);
+				}
+			}
+		}
+	}
+
+	public double getDeterminant(){
+		return 1;
+	}
+
+	@Override
+	public int getRang() {
+		return getColumns();
+	}
+
+}
