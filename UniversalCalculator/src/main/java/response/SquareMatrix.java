@@ -1,8 +1,5 @@
 package response;
 
-
-import UniversalCalculator.UniversalCalculator.MatrixActions;
-
 public class SquareMatrix extends Matrix
 {
 
@@ -27,14 +24,12 @@ public class SquareMatrix extends Matrix
 
     public double getDeterminant(){
 
-        MatrixActions matrixActions = new MatrixActions();
-        Matrix matrix_copy = new Matrix(super.getMatrix());
-        Matrix mat = matrixActions.triangularShapeLower(matrix_copy);
+        Matrix matrix_copy = new Matrix(matrix);
+        Matrix mat = triangularShapePermutCountForDeterminat(matrix_copy);
         double d = 1;
         for(int i = 0; mat.matrix.length > i; i++){
             d = d * mat.matrix[i][i];
         }
-
         return d;
     }
 

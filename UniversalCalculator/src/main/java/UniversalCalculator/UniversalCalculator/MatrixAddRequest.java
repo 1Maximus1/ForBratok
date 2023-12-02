@@ -1,7 +1,5 @@
 package UniversalCalculator.UniversalCalculator;
 
-import response.Matrix;
-
 public class MatrixAddRequest
 {
 	private double[][] m1;

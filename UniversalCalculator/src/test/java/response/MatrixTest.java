@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -286,4 +287,45 @@ public class MatrixTest {
 
         assertFalse(mat.equals(otherMatrix));
     }
+
+    @Test
+    public void GetDeterminant_simlpeMatrix_1(){
+        double[][] array_d = new double[][]{{0, 3}, {2,1}};
+        mat = new Matrix(array_d);
+
+        assertEquals(-6, mat.getDeterminant());
+    }
+    @Test
+    public void GetDeterminant_simlpeMatrix_2(){
+        double[][] array_d = new double[][]{{0, 3,2}, {2,1,3}, {0,2,1}};
+        mat = new Matrix(array_d);
+
+        assertEquals(2, mat.getDeterminant());
+    }
+
+    @Test
+    public void GetDeterminant_simlpeMatrix_3(){
+        double[][] array_d = new double[][]{{0, 3,2}, {0,1,3}, {0,2,1}};
+        mat = new Matrix(array_d);
+
+        assertEquals(0, mat.getDeterminant());
+    }
+
+    @Test
+    public void GetDeterminant_simlpeMatrix_4(){
+        double[][] array_d = new double[][]{{0,3,2,3,1}, {0,1,3,5,1}, {0,2,1,5,1}, {3,5,1,2,6}, {3,7,4,3,4}};
+        mat = new Matrix(array_d);
+
+        assertEquals(201, mat.getDeterminant());
+    }
+
+    @Test
+    public void GetDeterminant_simlpeMatrix_5(){
+        double[][] array_d = new double[][]{{0,0,0}, {0,0,0}, {0,0,0}};
+        mat = new Matrix(array_d);
+
+        assertEquals(0, mat.getDeterminant());
+    }
+
+    
 }

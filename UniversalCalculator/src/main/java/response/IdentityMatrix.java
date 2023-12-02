@@ -1,6 +1,5 @@
 package response;
 
-import UniversalCalculator.UniversalCalculator.MatrixActions;
 
 public class IdentityMatrix extends SquareMatrix
 {

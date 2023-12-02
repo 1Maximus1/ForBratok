@@ -25,7 +25,8 @@ public class MatrixController {
 
 	@PostMapping("/multiplyMatrices")
 	public Matrix multiplyMatrices(@RequestBody MatrixMultiplyRequest request) {
-		return MatrixActions.multiplicationMatrices(new Matrix(request.getM1()),new Matrix(request.getM2()));
+		MatrixActions matrixActions = new MatrixActions();
+		return matrixActions.multiplicationMatrices(new Matrix(request.getM1()),new Matrix(request.getM2()));
 	}
 
 	@PostMapping("/determinant")

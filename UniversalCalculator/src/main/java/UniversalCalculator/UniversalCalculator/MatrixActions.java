@@ -11,6 +11,9 @@ public class MatrixActions
 
 
     public Matrix addMatrices(Matrix m1, Matrix m2){
+        if(!m1.getDimension().contains(m2.getDimension())){
+            throw new IllegalArgumentException("Matrices dim should be equal: %s != %s".formatted(m1.getDimension(), m2.getDimension()));
+        }
         Matrix newMatrix = new Matrix(m1);
         for (int i = 0; i < m1.getMatrix().length; i++) {
             for (int j = 0; j < m1.getMatrix()[0].length; j++) {
@@ -20,7 +23,21 @@ public class MatrixActions
         return newMatrix;
     }
 
-    protected static Matrix multiplicationByScalar(Matrix a, double scalar) {
+    public Matrix subtractMatrices(Matrix m1, Matrix m2) {
+        if (m1.getMatrix().length != m2.getMatrix().length || m1.getMatrix()[0].length != m2.getMatrix()[0].length) {
+            throw new IllegalArgumentException("Matrices must have the same dimensions for subtraction.");
+        }
+
+        Matrix newMatrix = new Matrix(m1);
+        for (int i = 0; i < m1.getMatrix().length; i++) {
+            for (int j = 0; j < m1.getMatrix()[0].length; j++) {
+                newMatrix.getMatrix()[i][j] = m1.getMatrix()[i][j] - m2.getMatrix()[i][j];
+            }
+        }
+        return newMatrix;
+    }
+
+    public Matrix multiplicationByScalar(Matrix a, double scalar) {
         Matrix result = new Matrix(a.getRows(), a.getColumns());
         for (int i = 0; i < a.getRows(); i++) {
             for (int j = 0; j < a.getColumns(); j++) {
@@ -29,7 +46,7 @@ public class MatrixActions
         }
         return result;
     }
-    public static Matrix multiplicationMatrices(Matrix a, Matrix b) {
+    public Matrix multiplicationMatrices(Matrix a, Matrix b) {
         if (a.getMatrix().length == 0 || b.getMatrix().length == 0) {
             throw new IllegalArgumentException("No matrices provided for addition.");
         }
@@ -91,68 +108,64 @@ public class MatrixActions
             }
         }
 
-        for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
-            for (int i = centalC; i < matrix.getRows() - 1; i++) {
-                newMatrix.setElement(i + 1 + 1, centalC + 1, Math.round(matrix.getMatrix()[i + 1][centalC]));
-            }
-        }
-
         return newMatrix;
     }
 
-    public Matrix triangularShapeLower(Matrix matrix) {
-        int counterOfPermute = 0;
-        for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
-            if (matrix.getMatrix()[centalR][centalC] != 0) {
-                for (int i = centalC; i < matrix.getRows(); i++) {
-                    Matrix divideM = matrix.getRow(centalR + 1);
-                    if ((i + 1) < matrix.getRows()) {
-                        divideM = multiplicationByScalar(divideM, -1 * matrix.getMatrix()[i + 1][centalC] / matrix.getMatrix()[centalR][centalC]);
-                        matrix = addRowToMatrix(matrix, divideM, i + 1);
-                    } else {
-                        break;
-                    }
-                }
-            } else {
-                for (int j = centalC; j < matrix.getColumns(); j++) {
-                    if ((j + 1) < matrix.getColumns()) {
-                        matrix = permuteColumn(matrix,j + 1, j + 2);
-                        counterOfPermute++;
-                    }
-                    if (matrix.getMatrix()[centalR][centalC] != 0) {
-                        break;
-                    }
-                }
-                if (matrix.getMatrix()[centalR][centalC] == 0) {
-                    break;
-                }
-                centalR--;
-                centalC--;
+    public Matrix triangularShapeLower(Matrix matrix){
 
-            }
-        }
-
-        for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
-            for (int i = centalC; i < matrix.getRows() - 1; i++) {
-                matrix.setElement(i + 1 + 1, centalC + 1, Math.round(matrix.getMatrix()[i + 1][centalC]));
-
-            }
-        }
-
-        if (Math.abs(counterOfPermute) % 2 == 0) {
+        int LastDigitOfTriangul;
+        if (matrix.getColumns() < matrix.getRows()) {
+            LastDigitOfTriangul = 0;
         } else {
-            matrix = multiplicationByScalar(matrix, -1);
+            LastDigitOfTriangul = matrix.getColumns() - matrix.getRows();
         }
-        return new Matrix(matrix);
-    }
+        Matrix newMatrix = new Matrix(matrix);
+        int count_backing = 0;
+        for (int i = newMatrix.getColumns() - 1; i > LastDigitOfTriangul - 1; i--) {
+            count_backing++; 
+            int row_pivot = newMatrix.getRows() - count_backing;
 
+            Boolean matrix_swaped = false;
+            for (int j = row_pivot; j > -1; j--) {
+                if(matrix_swaped){
+
+                } else {
+                    if (newMatrix.getMatrix()[j][i] != 0) {
+                        double[] temp = newMatrix.getMatrix()[row_pivot];
+                        newMatrix.getMatrix()[row_pivot] = newMatrix.getMatrix()[j];
+                        newMatrix.getMatrix()[j] = temp;
+                        matrix_swaped = true;
+                    }
+                }
+                
+            }
+            
+            double first_d = newMatrix.getMatrix()[row_pivot][i];
+            
+            for (int j = row_pivot - 1; j > -1 ; j--) {
+                double other_d = newMatrix.getMatrix()[j][i];
+                if(first_d != 0) {
+                    double alpha = other_d / first_d;
+                    for (int k = 0; k < newMatrix.getColumns(); k++) {
+                        newMatrix.getMatrix()[j][k] = newMatrix.getMatrix()[j][k] - alpha*newMatrix.getMatrix()[row_pivot][k];
+                    }
+                }
+            }
+        }
+        return newMatrix;     
+    }
+    
     public Matrix addRowToMatrix(Matrix matrix, Matrix row, int index){
-        if (index < 0 || index >= matrix.getRows() || row.getColumns() != matrix.getColumns()) {
+        if (row.getRows() != 1){
+            throw new IllegalArgumentException("Row matrix isn't row, it have %d rows not 1".formatted(row.getRows()));
+        }
+
+        if (index <= 0 || index > matrix.getRows() || row.getColumns() != matrix.getColumns()) {
             throw new IllegalArgumentException("Invalid index or row dimensions.");
         }
 
         for (int i = 0; i < row.getColumns(); i++) {
-            matrix.getMatrix()[index][i] += row.getElement(1, i + 1);
+            matrix.getMatrix()[index - 1][i] += row.getElement(1, i + 1);
         }
         return matrix;
     }

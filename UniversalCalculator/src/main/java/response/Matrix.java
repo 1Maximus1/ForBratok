@@ -132,20 +132,72 @@ public class Matrix implements IMatrix {
         return rang;
     }
 
+    protected static Matrix triangularShapePermutCountForDeterminat(Matrix matrix) {
+        int counterOfPermute = 0;
+        MatrixActions matrixActions = new MatrixActions();
+        for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
+            if (matrix.getMatrix()[centalR][centalC] != 0) {
+                for (int i = centalC; i < matrix.getRows(); i++) {
+                    Matrix divideM = matrix.getRow(centalR + 1);
+                    if ((i + 1) < matrix.getRows()) {
+                        divideM = matrixActions.multiplicationByScalar(divideM, -1 * matrix.getMatrix()[i + 1][centalC] / matrix.getMatrix()[centalR][centalC]);
+                        matrix = matrixActions.addRowToMatrix(matrix, divideM, i + 1 + 1);
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                for (int j = centalC; j < matrix.getColumns(); j++) {
+                    if ((j + 1) < matrix.getColumns()) {
+                        matrix = matrixActions.permuteColumn(matrix,j + 1, j + 2);
+                        counterOfPermute++;
+                    }
+                    if (matrix.getMatrix()[centalR][centalC] != 0) {
+                        break;
+                    }
+                }
+                if (matrix.getMatrix()[centalR][centalC] == 0) {
+                    break;
+                }
+                centalR--;
+                centalC--;
+
+            }
+        }
+
+        for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
+            for (int i = centalC; i < matrix.getRows() - 1; i++) {
+                matrix.setElement(i + 1 + 1, centalC + 1, Math.round(matrix.getMatrix()[i + 1][centalC]));
+
+            }
+        }
+
+        if (Math.abs(counterOfPermute) % 2 == 0) {
+        } else {
+            matrix = matrixActions.multiplicationByScalar(matrix, -1);
+        }
+        return new Matrix(matrix);
+    }
+
+
     @Override
     public double getDeterminant(){
         if (getColumns()!=getRows()) {
             throw new IllegalArgumentException("Determinant cannot be found");
         }
-        MatrixActions matrixActions = new MatrixActions();
+
+        if(getColumns() == 2){
+            return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        }
+        
         Matrix matrix_copy = new Matrix(matrix);
-        Matrix mat = matrixActions.triangularShapeLower(matrix_copy);
+        Matrix mat = triangularShapePermutCountForDeterminat(matrix_copy);
         double d = 1;
         for(int i = 0; mat.matrix.length > i; i++){
             d = d * mat.matrix[i][i];
         }
-
-        return d;
+            
+        return Math.round(d*100)/100;
     }
 
     public String getDimension(){
