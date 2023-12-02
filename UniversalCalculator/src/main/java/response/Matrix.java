@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class Matrix implements IMatrix {
     private int rows;
     private int columns;
-    private double[][] matrix;
+    protected double[][] matrix;
 
     public Matrix() {
         this.rows = 0;
@@ -16,6 +16,12 @@ public class Matrix implements IMatrix {
     }
 
     public Matrix(int rows, int columns) {
+        if(rows < 0 || columns < 0){
+            throw new IllegalArgumentException(String.format("Dimension can 0x0 but not: %dx%d",rows, columns));
+        }
+        if(rows == 0 ^ columns == 0){
+            throw new IllegalArgumentException(String.format("Dimension can't have only one 0: %dx%d",rows, columns));
+        } 
         this.rows = rows;
         this.columns = columns;
         this.matrix = new double[rows][columns];
@@ -40,11 +46,13 @@ public class Matrix implements IMatrix {
     }
 
     public void setElement(int row, int column, double value) {
-        matrix[row][column] = value;
+        CheckForNumInMatrix(row, column);
+        matrix[row - 1][column - 1] = value;
     }
 
     public double getElement(int row, int column) {
-        return matrix[row][column];
+        CheckForNumInMatrix(row, column);
+        return matrix[row - 1][column - 1];
     }
 
     public int getRows() {
@@ -64,7 +72,7 @@ public class Matrix implements IMatrix {
 
         row = row - 1;
 
-        if (row < 0 || row > rows) {
+        if (row < 0 || row >= rows) {
             throw new IllegalArgumentException("Invalid row index.");
         }
 
@@ -72,7 +80,7 @@ public class Matrix implements IMatrix {
 
         for (int i = row; i < getRows(); i++) {
             for (int j = 0; j < getColumns(); j++) {
-                matrixRow.setElement(0, j, matrix[row][j]);
+                matrixRow.setElement(1, j + 1, matrix[row][j]);
             }
         }
         return matrixRow;
@@ -82,7 +90,7 @@ public class Matrix implements IMatrix {
 
         column = column - 1;
 
-        if (column < 0 || column > columns) {
+        if (column < 0 || column >= columns) {
             throw new IllegalArgumentException("Invalid column index.");
         }
 
@@ -90,7 +98,7 @@ public class Matrix implements IMatrix {
 
         for (int i = 0; i < getRows(); i++) {
             for (int j = column; j < getColumns(); j++) {
-                matrixColumn.setElement(i, 0, matrix[i][column]);
+                matrixColumn.setElement(i + 1, 1, matrix[i][column]);
             }
         }
         return matrixColumn;
@@ -99,6 +107,10 @@ public class Matrix implements IMatrix {
 
     @Override
     public int getRang(){
+        
+        if(this.getDimension().contains("0 x 0")){
+            return 0;
+        }
         MatrixActions matrixActions = new MatrixActions();
         Matrix matrix_copy = new Matrix(matrix);
         Matrix mat = matrixActions.triangularShapeUpper(matrix_copy);
@@ -122,52 +134,18 @@ public class Matrix implements IMatrix {
 
     @Override
     public double getDeterminant(){
-        if (getColumns()==getRows()) {
-            MatrixActions matrixActions = new MatrixActions();
-            Matrix matrix_copy = new Matrix(matrix);
-            Matrix mat = matrixActions.transformToLowerTriangular(matrix_copy);
-            return getDeterminantR(mat.matrix);
-        }else {
+        if (getColumns()!=getRows()) {
             throw new IllegalArgumentException("Determinant cannot be found");
         }
-    }
-
-    protected double getDeterminantR(double[][] matrix)
-    {
-        if(matrix.length == 1){
-            return matrix[0][0];
+        MatrixActions matrixActions = new MatrixActions();
+        Matrix matrix_copy = new Matrix(matrix);
+        Matrix mat = matrixActions.triangularShapeLower(matrix_copy);
+        double d = 1;
+        for(int i = 0; mat.matrix.length > i; i++){
+            d = d * mat.matrix[i][i];
         }
 
-        if(matrix.length != 2){
-            return matrix[0][0] * Math.pow(-1, 1) * getDeterminantR(getMinorOfMatrix(matrix, 0, 0));
-        }
-
-        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-    }
-
-
-    protected static double[][] getMinorOfMatrix(double[][] matrix, int row, int column)
-    {
-        double[][] minor = new double[matrix.length - 1][matrix.length - 1];
-
-
-        int r = 0, c = 0;
-
-        for (int i = 0; i < matrix.length; i++) {
-            if (i != row) {
-                c = 0;
-                for (int j = 0; j < matrix.length; j++) {
-                    if (j != column) {
-                        minor[r][c] = matrix[i][j];
-                        c++;
-                    }
-                }
-                r++;
-            }
-        }
-
-        return minor;
-
+        return d;
     }
 
     public String getDimension(){
@@ -199,9 +177,10 @@ public class Matrix implements IMatrix {
             return false;
         }
         Matrix m = (Matrix) o;
-        return this.getRows() == m.getRows()
+        boolean answer = this.getRows() == m.getRows()
                 && this.getColumns() == m.getColumns()
                 && Arrays.deepEquals(this.matrix, m.matrix);
+        return answer;
     }
 
     @Override
@@ -215,6 +194,13 @@ public class Matrix implements IMatrix {
         }
 
         return result;
+    }
+
+    protected void CheckForNumInMatrix(int rows, int columns){
+        if (rows <= 0 || rows > this.getRows()
+                || columns <= 0 || columns > this.getColumns()){
+                    throw new IllegalArgumentException("Element num is bigger than matrix dim");
+                }
     }
 }
 

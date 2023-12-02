@@ -20,8 +20,8 @@ public class IdentityMatrix extends SquareMatrix
 	}
 
 	private void initializeIdentityMatrix() {
-		for (int i = 0; i < getRows(); i++) {
-			for (int j = 0; j < getColumns(); j++) {
+		for (int i = 1; i <= getRows(); i++) {
+			for (int j = 1; j <= getColumns(); j++) {
 				if (i == j) {
 					setElement(i, j, 1.0);
 				} else {

@@ -24,7 +24,7 @@ public class MatrixActions
         Matrix result = new Matrix(a.getRows(), a.getColumns());
         for (int i = 0; i < a.getRows(); i++) {
             for (int j = 0; j < a.getColumns(); j++) {
-                result.setElement(i, j, a.getElement(i, j) * scalar);
+                result.setElement(i + 1, j + 1, a.getElement(i + 1, j + 1) * scalar);
             }
         }
         return result;
@@ -49,7 +49,7 @@ public class MatrixActions
                     double mult = number1 * number2;
                     sum = sum + mult;
                 }
-                result.setElement(i, j, sum);
+                result.setElement(i + 1, j + 1, sum);
             }
         }
         return result;
@@ -93,14 +93,14 @@ public class MatrixActions
 
         for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
             for (int i = centalC; i < matrix.getRows() - 1; i++) {
-                newMatrix.setElement(i + 1, centalC, Math.round(matrix.getMatrix()[i + 1][centalC]));
+                newMatrix.setElement(i + 1 + 1, centalC + 1, Math.round(matrix.getMatrix()[i + 1][centalC]));
             }
         }
 
         return newMatrix;
     }
 
-    public Matrix transformToLowerTriangular(Matrix matrix) {
+    public Matrix triangularShapeLower(Matrix matrix) {
         int counterOfPermute = 0;
         for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
             if (matrix.getMatrix()[centalR][centalC] != 0) {
@@ -134,7 +134,7 @@ public class MatrixActions
 
         for (int centalR = 0, centalC = 0; centalR < matrix.getRows() && centalC < matrix.getColumns(); centalR++, centalC++) {
             for (int i = centalC; i < matrix.getRows() - 1; i++) {
-                matrix.setElement(i + 1, centalC, Math.round(matrix.getMatrix()[i + 1][centalC]));
+                matrix.setElement(i + 1 + 1, centalC + 1, Math.round(matrix.getMatrix()[i + 1][centalC]));
 
             }
         }
@@ -152,7 +152,7 @@ public class MatrixActions
         }
 
         for (int i = 0; i < row.getColumns(); i++) {
-            matrix.getMatrix()[index][i] += row.getElement(0, i);
+            matrix.getMatrix()[index][i] += row.getElement(1, i + 1);
         }
         return matrix;
     }
@@ -245,7 +245,7 @@ public class MatrixActions
 
         for (int i = 0; i < matrix.getRows(); i++) {
             for (int j = 0; j < matrix.getColumns(); j++) {
-                transposedMatrix.setElement(j, i, matrix.getMatrix()[i][j]);
+                transposedMatrix.setElement(j + 1, i + 1, matrix.getMatrix()[i][j]);
             }
         }
 
@@ -253,7 +253,7 @@ public class MatrixActions
     }
 
 
-    public static SquareMatrix powerMatrix(SquareMatrix matrix, int degree) {
+    public SquareMatrix powerMatrix(SquareMatrix matrix, int degree) {
         if (degree < 0) {
             throw new IllegalArgumentException("Matrix cannot be raised to a negative power.");
         }
@@ -265,7 +265,7 @@ public class MatrixActions
         SquareMatrix result = new SquareMatrix(matrix);
 
         for (int i = 1; i < degree; i++) {
-            result = (SquareMatrix) multiplicationMatrices(result, new SquareMatrix(matrix));
+            result = new SquareMatrix(multiplicationMatrices(result, matrix));
         }
 
         return result;
