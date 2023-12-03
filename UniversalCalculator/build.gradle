@@ -6,28 +6,24 @@ plugins {
 }
 
 jacoco {
-    toolVersion = "0.8.9"
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+	toolVersion = "0.8.9"
+	reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
-
-
-
 jacocoTestReport {
-    dependsOn test // tests are required to run before generating the report
+	dependsOn test
 }
 
-
 jacocoTestReport {
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-    }
+	reports {
+		xml.required = false
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+	}
 }
 
 test {
-    finalizedBy jacocoTestReport // report is always generated after tests run
+	finalizedBy jacocoTestReport
 	useJUnitPlatform()
 	testLogging {
 		events "passed", "skipped", "failed"
@@ -56,6 +52,7 @@ ext {
 }
 
 dependencies {
+	implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
